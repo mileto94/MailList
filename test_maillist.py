@@ -89,3 +89,11 @@ class MailListTest(unittest.TestCase):
 
     def test_remove_subscriber_when_not_there(self):
         self.assertIsNone(self.m.remove_subscriber("rado@radorado.com"))
+
+    def test_save_subscriber(self):
+        self.m.add_subscriber("Rado rado", "rado@rado.com")
+        self.m.save_subscriber()
+        self.assertGreater(self.m.get_id(), -1)
+
+if __name__ == '__main__':
+    unittest.main()

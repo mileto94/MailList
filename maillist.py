@@ -48,3 +48,8 @@ class MailList():
 
     def get_id(self):
         return self.__id
+
+    def save_subscriber(self):
+        pass
+
+
