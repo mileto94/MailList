@@ -99,3 +99,7 @@ class MailListFileAdapterTest(unittest.TestCase):
 
     def tearDown(self):
         call("rm -rf {}".format(self.db_path), shell=True)
+
+
+if __name__ == '__main__':
+    unittest.main()

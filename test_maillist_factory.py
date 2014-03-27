@@ -16,3 +16,7 @@ class MailListFactoryTest(unittest.TestCase):
 
         self.assertEqual("Hack Bulgaria", m.get_name())
         self.assertEqual(1, m.get_id())
+
+
+if __name__ == '__main__':
+    unittest.main()
