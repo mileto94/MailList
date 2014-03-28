@@ -15,7 +15,6 @@ class MailListFactoryTest(unittest.TestCase):
         m = self.factory.create("Hack Bulgaria")
 
         self.assertEqual("Hack Bulgaria", m.get_name())
-        self.assertEqual(1, m.get_id())
 
 
 if __name__ == '__main__':

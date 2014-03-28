@@ -19,11 +19,11 @@ class MailListTest(unittest.TestCase):
         self.m.add_subscriber("Rado", "radorado@hackbulgaria.com")
         expected = [("Rado", "radorado@hackbulgaria.com")]
         self.assertEqual(expected, self.m.get_subscribers())
-"""
+    """
     def test_get_id(self):
         self.assertEqual(1, self.m.get_id())
 
-    def test_get_id_after_three_instances(self):
+        def test_get_id_after_three_instances(self):
         m1 = MailList(1, "Hack")
         m2 = MailList(2, "Hack")
         m3 = MailList(3, "Hack")
@@ -39,8 +39,8 @@ class MailListTest(unittest.TestCase):
         self.assertTrue(add1)
         self.assertFalse(add2)
         self.assertEqual(("Rado", subscriber_email),
-                         self.m.get_subscriber_by_email(subscriber_email))
-"""
+        self.m.get_subscriber_by_email(subscriber_email))
+    """
 
     def test_add_get_subscriber_by_email(self):
         self.m.add_subscriber("Rado", "radorado@hackbulgaria.com")
