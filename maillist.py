@@ -10,6 +10,7 @@ class MailList():
     def add_subscriber(self, name, email):
         subscriber = Subscriber(name, email)
         subscriber.save()
+        self.subscribers[email] = name
         return True
         """if email in self.subscribers:
             return False
@@ -26,7 +27,6 @@ class MailList():
     def get_subscriber_by_email(self, email):
         if email in self.subscribers:
             return (self.subscribers[email], email)
-
         return None
 
     def get_subscribers(self):
