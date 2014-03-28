@@ -1,5 +1,6 @@
 from maillist import MailList
 import os
+import sqlite3
 
 
 class MailListFileAdapter():
@@ -9,12 +10,6 @@ class MailListFileAdapter():
         self.mail_list = mail_list
         self._ensure_db_path()
 
-    def get_file_name(self):
-        return self.mail_list.get_name().replace(" ", "_")
-
-    def get_file_path(self):
-        return self.db_path + self.get_file_name()
-
     # (name, email) -> "<name> - <email>"
     def prepare_for_save(self):
         subscribers = self.mail_list.get_subscribers()
@@ -23,12 +18,16 @@ class MailListFileAdapter():
         return sorted(subscribers)
 
     def save(self):
-        file_to_save = open(self.get_file_path(), "w")
-        contents = "{}\n".format(self.mail_list.get_id())
-        contents += "\n".join(self.prepare_for_save())
-
-        file_to_save.write(contents)
-        file_to_save.close()
+        self.db_path = sqlite3.connect("maillist.db")
+        self.cursor = self.db_path.cursor()
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS Lists
+                            (id integer primary key autoincrement, name)""")
+        lists_query = ("""INSERT INTO Lists(name)
+                       VALUES(?)""")
+        lists_data = [self.mail_list.get_name()]
+        self.cursor.execute(lists_query, lists_data)
+        self.db_path.commit()
+        self.db_path.close()
 
     def load(self, file_name):
         maillist_name = file_name.replace("_", " ")
@@ -57,5 +56,5 @@ class MailListFileAdapter():
         return result
 
     def _ensure_db_path(self):
-        if not os.path.exists(self.db_path):
-            os.makedirs(self.db_path)
+        if not os.path.isfile("maillist.db"):
+            self.db_path = sqlite3.connect("maillist.db")

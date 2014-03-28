@@ -1,16 +1,21 @@
+from subscriber import Subscriber
+
+
 class MailList():
     """docstring for MailList"""
-    def __init__(self, list_id, name):
+    def __init__(self, name):
         self.__name = name
-        self.__id = list_id
         self.subscribers = {}
 
     def add_subscriber(self, name, email):
-        if email in self.subscribers:
+        subscriber = Subscriber(name, email)
+        subscriber.save()
+        return True
+        """if email in self.subscribers:
             return False
 
         self.subscribers[email] = name
-        return True
+        return True"""
 
     def get_name(self):
         return self.__name
@@ -45,6 +50,3 @@ class MailList():
             del self.subscribers[email]
 
         return None
-
-    def get_id(self):
-        return self.__id

@@ -1,9 +1,10 @@
 from commandparser import CommandParser
 from maillist_factory import MailListFactory
 from maillist_file_adapter import MailListFileAdapter
-from glob import glob
-from os.path import basename
+from subscriber import Subscriber
+import sqlite3
 import sys
+import os
 
 
 class MailListProgram():
@@ -11,8 +12,7 @@ class MailListProgram():
     def __init__(self):
         self.factory = MailListFactory()
         self.cp = CommandParser()
-        self.lists = {}
-        self.db_path = "lists/"
+        self.lists = []
 
         self._load_initial_state()
         self._init_callbacks()
@@ -25,15 +25,26 @@ class MailListProgram():
         maillist_adapter = MailListFileAdapter(self.db_path, maillist)
         maillist_adapter.save()
 
-        self.lists[maillist.get_id()] = (maillist, maillist_adapter)
+        self.lists.append(maillist.get_name())
+        print(self.lists)
 
     def add_subscriber_callback(self, arguments):
         list_id = int("".join(arguments))
         name = input("name>")
         email = input("email>")
-
-        self.lists[list_id][0].add_subscriber(name, email)
-        self._notify_save(list_id)
+        subscriber = Subscriber(name, email)
+        subscriber.save()
+        self.db_path = sqlite3.connect("maillist.db")
+        self.cursor = self.db_path.cursor()
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS relations
+                            (list_id, subscriber_id)""")
+        query = ("""INSERT INTO relations(list_id, subscriber_id)
+                    VALUES(?, ?)""")
+        data = [list_id, subscriber.id]
+        print(data)
+        self.cursor.execute(query, data)
+        self.db_path.commit()
+        self.db_path.close()
 
     def show_lists_callback(self, arguments):
         for list_id in self.lists:
@@ -55,15 +66,12 @@ class MailListProgram():
         sys.exit(0)
 
     def _load_initial_state(self):
-        dir_lists = map(basename, glob(self.db_path + "*"))
-
-        for list_file in dir_lists:
-            adapter = MailListFileAdapter(self.db_path)
-            parsed_list = adapter.load(list_file)
-
-            maillist_adapter = MailListFileAdapter(self.db_path, parsed_list)
-
-            self.lists[parsed_list.get_id()] = (parsed_list, maillist_adapter)
+        if os.path.isfile("maillist.db"):
+            self.db_path = sqlite3.connect("maillist.db")
+            self.cursor = self.db_path.cursor()
+            lists_data = self.cursor.execute("""SELECT name FROM Lists""")
+            for list in lists_data:
+                self.lists.append(list[0])
 
     def _init_callbacks(self):
         self.cp.on("create", self.create_list_callback)
@@ -74,7 +82,7 @@ class MailListProgram():
         # TODO - implement the rest of the callbacks
 
     def _notify_save(self, list_id):
-        self.lists[list_id][1].save()
+        self.lists[list_id - 1].save()
 
     def _loop(self):
         while True:

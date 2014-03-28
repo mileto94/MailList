@@ -1,4 +1,5 @@
 from maillist import MailList
+import sqlite3
 
 
 class MailListFactory():
@@ -14,5 +15,5 @@ class MailListFactory():
         return result
 
     def create(self, list_name):
-        m = MailList(self.next_id(), list_name)
+        m = MailList(list_name)
         return m
